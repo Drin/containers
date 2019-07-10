@@ -1,0 +1,33 @@
+#
+# ~/.bashrc
+#
+
+# make sure I'm in my home directory
+#cd
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+PS1='[\u@\h \W]\$ '
+
+# alias definitions
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+alias rm='rm -i'
+
+# Load environment last (and only load once per session)
+if [[ $BASH_ENV_LOADED != 1 ]]; then
+    echo "---  Loading bash env"
+
+    export BASH_ENV_LOADED=1
+    export EDITOR=vim
+
+    # pyenv variables
+    export PYENV_ROOT="/toolbox/pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH:/usr/local/bin"
+fi
+
+# init pyenv if necessary
+if command -v pyenv 1>/dev/null 2>&1; then
+    eval "$(pyenv init -)"
+fi
