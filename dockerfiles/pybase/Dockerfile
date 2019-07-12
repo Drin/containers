@@ -23,7 +23,8 @@ RUN        apk add --no-cache build-base  \
 WORKDIR    "/workspace"
 RUN        mkdir -p "/toolbox"
 COPY       scripts/get-poetry.py       /get-poetry.py
-COPY       config/bash_environment     "/root/.bash_environment"
+COPY       config/bash_environment     "$HOME/.bash_environment"
+COPY       config/bash_init            "$HOME/.bash_init"
 
 # ------------------------------
 # Setup image tools
@@ -35,7 +36,3 @@ RUN        ["bash", "/install-pyenv.bash"]
 # prep poetry
 COPY       scripts/install-poetry.bash /install-poetry.bash
 RUN        ["bash", "/install-poetry.bash", "local"]
-
-# Prep entry script
-COPY       scripts/entrypoint.bash     /entrypoint.bash
-ENTRYPOINT ["bash", "/entrypoint.bash"]

@@ -1,37 +1,27 @@
 FROM archlinux/base:latest
 
 # Image labels
-LABEL "maintainer"="Aldrin Montana <akmontan@ucsc.edu>"
-LABEL       "name"="pybase"
-LABEL    "version"="0.0.1"
-
-# Image mounts
-COPY scripts/install-pyenv.bash  /install-pyenv.bash
-COPY scripts/install-poetry.py   /install-poetry.py
-COPY config/bashrc               "/root/.bashrc"
+LABEL   "maintainer"="Aldrin Montana <akmontan@ucsc.edu>"
+LABEL         "name"="pybase"
+LABEL      "version"="0.0.1"
 
 # ------------------------------
 # Image prep
 # update packages then install needed packages
-RUN pacman -Syu --noconfirm base-devel zlib libffi openssl \
-                            python git
+RUN     pacman -Syu --noconfirm base-devel openssl git tar
+
+# Image mounts
+WORKDIR "/workspace"
+RUN     mkdir -p "/toolbox"
+COPY    scripts/get-poetry.py       /get-poetry.py
+COPY    config/bash_environment     "/root/.bash_environment"
+COPY    config/bash_init            "/root/.bash_init"
 
 # create directories and change directory
-RUN     mkdir -p "/toolbox" "/workspace"
-WORKDIR "/workspace"
 
 # install and setup pyenv
-RUN    source /install-pyenv.bash  \
-    && pyenv install 3.7.3         \
-    && pyenv global 3.7.3          \
-    && pyenv local 3.7.3           \
-    && python /install-poetry.py
+COPY    scripts/install-pyenv.bash  /install-pyenv.bash
+RUN     ["bash", "/install-pyenv.bash"]
 
-# RUN    export PYENV_ROOT="/toolbox/pyenv"                 \
-#     && export PATH="$PYENV_ROOT/bin:$PATH:/usr/local/bin" \
-#     && eval   "$(pyenv init -)"                           \
-#     && source $HOME/.poetry/env                           \
-#     && poetry self:update
-
-# Entry command
-ENTRYPOINT ["bash"]
+COPY    scripts/install-poetry.bash     /install-poetry.bash
+RUN     ["bash", "/install-poetry.bash", "local"]
