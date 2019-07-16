@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+
 # ------------------------------
 # An idempotent config file to be sourced in a bash session
 
