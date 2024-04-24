@@ -1,0 +1,144 @@
+" ------------------------------
+" .vimrc -- the way it ought to be: Ha. It rhymes!
+
+
+" ------------------------------
+" Basic Setup
+
+set encoding=utf-8
+set nocompatible          " no compatibility with vi
+
+filetype on               " recognize syntax by file extension
+filetype plugin on        " Look at .vim/ftplugin
+filetype indent on        " check for indent file
+
+syntax on                 " syntax highlighting
+
+behave xterm              " for mouse controls. standardize on unix vs microsoft
+
+" when the terminal has colors
+if &t_Co > 2 || has("gui_running")
+  syntax on
+  " highlight last used search pattern
+  set hlsearch
+endif
+
+set backspace=2           " allow <BS> to go past last insert
+set smartcase             " searches are case-sensitive if caps used
+set incsearch             " immediately highlight search matches
+set noerrorbells          " no beeps on errors
+
+set number                " display line numbers
+set ruler                 " display row, column and % of document
+set showcmd               " show partial commands in the status line
+set showmatch             " show matching () {} etc.
+set showmode              " show current mode
+
+set wildmenu              " for bash-style tab-completion
+set wildmode=longest,list " set the type of the tab-completion
+
+" modeline used to be further down, dunno why it's after nomodeline
+set nomodeline            " prevent others from overriding this .vimrc
+set modeline              " check for a modeline
+
+" indentation
+set autoindent            " Auto indent
+set expandtab             " expand tabs with spaces
+set tabstop=2             " <Tab> move 2 characters
+set shiftwidth=2          " >> and << shift 2 spaces
+set textwidth=90          " hard wrap at 90 characters
+set softtabstop=2         " see spaces as tabs
+
+set scrolloff=5           " start scrolling when cursor is N lines from edge
+set wrap                  " linewrap
+
+" turns status line always on and configures it
+set laststatus=2
+set statusline=%<%f\ %m\ %h%r%=%b\ 0x%B\ \ %l,%c%V\ %P\ of\ %L
+
+
+" ------------------------------
+" Color Stuff
+
+" todo: compare this to "syntax on" above
+syntax enable
+
+
+" ------------------------------
+" Autocommands
+
+" If VIM is compiled with autocommand support...
+if has("autocmd")
+
+  " jump to the last known cursor position, unless:
+  "     * position is invalid
+  "     * when inside an event handler (e.g. when dragging a file to gvim)
+  "     * marks in in the first line (default position)
+  autocmd BufReadPost *
+    \ if line("'\"") > 1 && line("'\"") <= line("$") |
+    \   exe "normal! g`\"" |
+    \ endif
+
+endif
+
+" general filetypes
+au BufRead,BufNewFile *.txt        set textwidth=80
+au BufRead,BufNewFile *.md         set ft=markdown
+au BufRead,BufNewFile *.markdown   set ft=markdown
+au BufRead,BufNewFile *.less       set ft=less
+
+
+" programming language filetypes
+au BufRead,BufNewFile *.flake8     set ft=dosini
+au BufRead,BufNewFile *.g          set ft=antlr
+au BufRead,BufNewFile [Mm]akefile* set noet ts=8 sw=8 nocindent list lcs=tab:>-,trail:x
+
+" F#
+au BufRead,BufNewFile *.fs         set ft=fs
+
+
+" ------------------------------
+" Special Key Mappings
+
+" This disables smartindent's treatment of #-based comments
+:inoremap # X#
+
+" Remove trailing spaces from lines w/ F6: http://vim.wikia.com/wiki/Remove_unwanted_spaces
+:nnoremap <silent> <F6> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
+
+" Shawn's code was cool, but this works on all vcs'
+:nnoremap <C-b><C-b> :VCSBlame<CR>
+
+" Because we like our line numbers sometimes...
+:nnoremap <C-N><C-N> :set invnumber<CR>
+
+" But we don't always wanna wrap
+:nnoremap <C-w><C-w> :set invwrap<CR>
+
+" And all the cool kids need to paste
+:nnoremap <C-p><C-p> :set invpaste<CR>
+
+" Convenience for toggling Syntastic
+" :nnoremap <C-s><C-s> :SyntasticToggleMode<CR>
+
+" Use the space key to open and close code folds
+:vnoremap <space> zf<CR>
+:nnoremap <space> zd<CR>
+
+" Toggle spell checking.
+:map <f7> :set spell!<cr>
+
+" Tab mappings
+" Tab fun - Tabs can be fun too!
+" @author David Patierno
+:nnoremap tn :tabnew<CR>
+:nnoremap tq :tabclose<CR>
+:nnoremap th :tabp<CR>
+:nnoremap tl :tabn<CR>
+
+" Window mappings
+:nnoremap ek <c-w><Up>
+:nnoremap ej <c-w><Down>
+:nnoremap eh <c-w><Left>
+:nnoremap el <c-w><Right>
+:nnoremap er <c-w>r
