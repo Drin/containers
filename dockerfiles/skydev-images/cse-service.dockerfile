@@ -15,7 +15,7 @@ FROM os-base AS protocol-builder
 
 ENV DEVTOOL_PREFIX="/usr/local/devtools"
 ENV PROTOCOL_REPO_URI="https://github.com/drin/mohair-substrait.git"
-ENV PROTOCOL_REPO_TAG="v1.0.3"
+ENV PROTOCOL_REPO_TAG="v1.1.1"
 ENV SOURCE_DIR="/workspace/mohair-substrait"
 ENV BUILD_DIR="/workspace/build-dir"
 
@@ -31,7 +31,7 @@ RUN meson setup --prefix            "${DEVTOOL_PREFIX}"               \
                 --cmake-prefix-path "${DEVTOOL_PREFIX}"               \
                 --pkg-config-path   "${DEVTOOL_PREFIX}/lib/pkgconfig" \
                 --buildtype         "release"                         \
-                --default-library   "shared"                          \
+                --default-library   "both"                            \
                 "${BUILD_DIR}"                                        \
                 "${SOURCE_DIR}"
 
@@ -113,4 +113,13 @@ ENV PATH="${DEVTOOL_PREFIX}/bin:${PATH}"
 
 # Grab the mohair repo to work with
 WORKDIR "/workspace"
-RUN git clone --branch v1.0.0 -- https://github.com/drin/mohair.git
+RUN git clone --branch v1.1.4 --recursive -- https://github.com/drin/mohair.git
+
+RUN meson setup --prefix            "${DEVTOOL_PREFIX}"               \
+                --libdir            "lib"                             \
+                --cmake-prefix-path "${DEVTOOL_PREFIX}"               \
+                --pkg-config-path   "${DEVTOOL_PREFIX}/lib/pkgconfig" \
+                --buildtype         "release"                         \
+                --default-library   "shared"                          \
+                "build-dir-release"                                   \
+                "mohair"
